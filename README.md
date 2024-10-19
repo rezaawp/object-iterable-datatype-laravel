@@ -1,0 +1,2 @@
+- Kode ini akan membantu kamu untuk mengabaikan case sensitive ketika mencoba akses array.
+- Kode ini otomatis mengconvert array menjadi class (class disini bisa berperilaku seperti array, jadi kamu bisa akses seperti array pada umumnya)
