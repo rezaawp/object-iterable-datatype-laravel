@@ -1,0 +1,13 @@
+{
+    "name": "rkwp/object-iterable-laravel",
+    "description": "A utility library for ObjectIterable and global function.",
+    "autoload": {
+      "psr-4": {
+        "MyLibrary\\Utils\\": "src/"
+      },
+      "files": [
+        "src/Helpers.php"
+      ]
+    },
+    "require": {}
+}

@@ -6,7 +6,7 @@
  * Created At : 2024-10-15
  */
 
-namespace App\Utils;
+namespace RKWP\Utils;
 
 use Illuminate\Support\Collection;
 
