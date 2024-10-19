@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * New data type in PHP
+ * @author Reza Khoirul Wijaya Putra
+ * Created At : 2024-10-15
+ */
+
 namespace App\Utils;
 
 use Illuminate\Support\Collection;
