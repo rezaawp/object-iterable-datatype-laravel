@@ -3,7 +3,7 @@
 use RKWP\Utils\ObjectIterable;
 
 if (!function_exists('objectIterable')) {
-    function objectIterable($objOrArray)
+    function objectIterable($objOrArray): ObjectIterable | array | null
     {
         if (gettype($objOrArray) == 'array') {
             $countable = count($objOrArray);
