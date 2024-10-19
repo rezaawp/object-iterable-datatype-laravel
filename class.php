@@ -100,7 +100,11 @@ class RowData implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
     {
         foreach ($data as $key => $value) {
             $property = strtolower($key);
-            $this->{$property} = $value; 
+            if (is_array($value)) {
+                $this->{$property} = new RowData($value);
+            } else {
+                $this->{$property} = $value;
+            }
         }
     }
 
