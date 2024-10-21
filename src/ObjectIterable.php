@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 
 class ObjectIterable implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSerializable
 {
-    private $items = [];
+    protected $items = [];
 
     public function __construct($items = [])
     {
