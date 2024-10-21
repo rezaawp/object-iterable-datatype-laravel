@@ -8,106 +8,16 @@
 
 namespace RKWP\Utils;
 
-use Illuminate\Support\Collection;
-
 class ObjectIterable implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSerializable
 {
-    protected $items = [];
-
     public function __construct($items = [])
     {
-        if (gettype($items) != 'array' && gettype($items) == 'string') {
-            throw new \Exception('yah , constructor ObjectIterable string euy');
-        }
-
         $items = json_decode(json_encode($items), true);
 
-        if (is_array($items) && !empty($items) && array_keys($items) !== range(0, count($items) - 1)) {
-            $this->items[] = $items; 
-        } else {
-            $this->items = $items; 
-        }
-    }
-
-    public function __get($name)
-    {
-        $name = strtolower($name); 
-        foreach ($this->items as $key => $value) {
-            if (is_array($value) && array_key_exists($name, array_change_key_case($value, CASE_LOWER))) {
-                return $value[$name];
-            }
-        }
-        return null;
-    }
-
-    public function offsetExists($offset): bool
-    {
-        return isset($this->items[$offset]);
-    }
-
-    public function offsetGet($offset): mixed
-    {
-        $data = $this->items[$offset];
-        if (is_array($data)) {
-            return new RowData($data);
-        }
-        return null;
-    }
-
-    public function offsetSet($offset, $value): void
-    {
-        if ($offset === null) {
-            $this->items[] = $value;
-        } else {
-            $this->items[$offset] = $value;
-        }
-    }
-
-    public function offsetUnset($offset): void
-    {
-        unset($this->items[$offset]);
-    }
-
-    public function getIterator(): \Traversable
-    {
-        $res = new \ArrayIterator(array_map(function ($item) {
-            $data = new RowData($item);
-
-            return $data;
-        }, $this->items));
-
-        return $res;
-    }
-
-    public function count(): int
-    {
-        return count($this->items);
-    }
-
-    function toArray()
-    {
-        return $this->items;
-    }
-
-    function toCollect(): Collection
-    {
-        return collect($this->items);
-    }
-
-    public function jsonSerialize(): mixed
-    {
-        return $this->items; 
-    }
-}
-
-class RowData implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
-{
-    public function __construct(array $data)
-    {
-        foreach ($data as $key => $value) {
+        foreach ($items as $key => $value) {
             $property = strtolower($key);
             if (is_array($value)) {
-                $this->{$property} = new RowData($value);
+                $this->{$property} = new ObjectIterable($value);
             } else {
                 $this->{$property} = $value;
             }
@@ -120,10 +30,15 @@ class RowData implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
         return $this->{$name} ?? null;
     }
 
+    public function __set($name, $value)
+    {
+        $name = strtolower($name);
+        $this->{$name} = $value;
+    }
+
     public function offsetExists($offset): bool
     {
-        $offset = strtolower($offset);
-        return property_exists($this, $offset);
+        return property_exists($this, strtolower($offset));
     }
 
     public function offsetGet($offset): mixed
@@ -147,6 +62,21 @@ class RowData implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator(get_object_vars($this));
+    }
+
+    public function count(): int
+    {
+        return count(get_object_vars($this));
+    }
+
+    public function toArray()
+    {
+        return get_object_vars($this);
+    }
+
+    public function toCollect(): \Illuminate\Support\Collection
+    {
+        return collect(get_object_vars($this));
     }
 
     public function jsonSerialize(): mixed
