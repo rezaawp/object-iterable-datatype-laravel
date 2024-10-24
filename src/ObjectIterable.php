@@ -24,6 +24,18 @@ class ObjectIterable implements \ArrayAccess, \IteratorAggregate, \Countable, \J
         }
     }
 
+    public function assign($items = []) {
+        foreach ($items as $key => $value) {
+            $property = strtolower($key);
+            if (is_array($value)) {
+                $this->{$property} = new ObjectIterable($value);
+            } else {
+                $this->{$property} = $value;
+            }
+        }
+        return $this;
+    }
+
     public function __get($name)
     {
         $name = strtolower($name);
