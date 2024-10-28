@@ -37,7 +37,7 @@ class GenerateDataTypeAndDataStructure extends Command
         $properties = $this->argument('properties');
 
         if (!str_contains($name, "/")) {
-            $this->error("Untuk sementara, kamu harus membuat tipe data di dalam folder. Contoh benar: php artisan make:data-type Mahasiswa/Mahasiswa");
+            $this->error("Untuk sementara, kamu harus membuat tipe data di dalam folder. Contoh benar: php artisan make:data-type Mahasiswa/Mahasiswa id,nama,umur");
             return Command::INVALID;
         }
 
