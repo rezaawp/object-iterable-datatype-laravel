@@ -1,0 +1,15 @@
+<?php
+
+namespace App\DataType\{namespace};
+
+use App\DataStructure{usenamespace};
+use RKWP\Utils\ObjectIterable;
+
+class {name} extends ObjectIterable {
+    use {use};
+
+    public function set($items) {
+        $this->assign($items);
+        return $this;
+    }
+}

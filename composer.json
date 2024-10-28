@@ -3,7 +3,8 @@
     "description": "A utility library for ObjectIterable and global function.",
     "autoload": {
       "psr-4": {
-        "RKWP\\Utils\\": "src/"
+        "RKWP\\Utils\\": "src/",
+        "RKWP\\Commands\\": "src/Commands/"
       },
       "files": [
         "src/Helpers.php"
