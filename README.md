@@ -17,7 +17,7 @@ $array = [
     ],
 ];
 
-$objectIterable = new \App\Utils\ObjectIterable($array);
+$objectIterable = new objectIterable($array);
 ```
 
 ### 2. **Akses Properti dengan Case Insensitive**
@@ -115,7 +115,7 @@ $data = [
     ]
 ];
 
-$object = new \App\Utils\ObjectIterable($data);
+$object = new objectIterable($data);
 
 echo $object->name; // Alice
 echo $object->address->city; // Wonderland
@@ -124,3 +124,9 @@ $arrayBack = $object->toArray();
 ``` 
 
 Ini adalah cara pemakaian dasar dari class `ObjectIterable` yang Anda buat untuk mengonversi array ke objek dan memberikan akses yang lebih fleksibel dengan fitur case-insensitive serta otomatisasi dalam penanganan properti berjenis array.
+
+
+## Lalu bagaimana untuk definisikan data object?
+Mungkin jika kamu sudah terbiasa menggunakan TypeScript sudah tidak asing lagi dengan autocomplete yang membantu kamu mengetahui sebuah objek itu akan return property apa saja. Di TypeScrpt bisa mengggunakan tipe data custom dan interface.
+
+Nah, dengan object iterable juga, kamu bisa

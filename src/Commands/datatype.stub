@@ -3,11 +3,21 @@
 namespace App\DataType\{namespace};
 
 use App\DataStructure{usenamespace};
-use RKWP\Utils\ObjectIterable;
+use App\Helper\ObjectIterable;
 
 class {name} extends ObjectIterable {
     use {use};
 
+    function __construct()
+    {
+        foreach (get_object_vars($this) as $name => $value) {
+            unset($this->{$name});
+        }
+    }
+
+    /**
+     * @return self{isObjectOfArray}|ObjectIterable
+     */
     public function set($items) {
         $this->assign($items);
         return $this;

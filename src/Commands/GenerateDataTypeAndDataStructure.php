@@ -1,6 +1,6 @@
 <?php
 
-namespace RKWP\Commands;
+namespace App\Console\Commands\MakeDataType;
 
 use FontLib\Table\Type\name;
 use Illuminate\Console\Command;
@@ -17,7 +17,7 @@ class GenerateDataTypeAndDataStructure extends Command
      *
      * @var string
      */
-    protected $signature = 'make:data-type {name : untuk membuat data type nya} {properties : untuk membuat property}';
+    protected $signature = 'make:data-type {name : untuk membuat data type nya} {properties : untuk membuat property} {isObjectOfArray=null : jika array}';
 
     /**
      * The console command description.
@@ -35,9 +35,10 @@ class GenerateDataTypeAndDataStructure extends Command
     {
         $name = $this->argument('name');
         $properties = $this->argument('properties');
+        $isObjectOfArray = $this->argument('isObjectOfArray');
 
         if (!str_contains($name, "/")) {
-            $this->error("Untuk sementara, kamu harus membuat tipe data di dalam folder. Contoh benar: php artisan make:data-type Mahasiswa/Mahasiswa id,nama,umur");
+            $this->error("Untuk sementara, kamu harus membuat tipe data di dalam folder. Contoh benar: php artisan make:data-type Mahasiswa/Mahasiswa");
             return Command::INVALID;
         }
 
@@ -99,11 +100,13 @@ class GenerateDataTypeAndDataStructure extends Command
         $typeFile = str_replace('{usenamespace}', "\\" . $nameSpace . '\\' . $structName, $typeFile);
         $typeFile = str_replace('{name}', $typeName, $typeFile);
         $typeFile = str_replace('{use}', $structName, $typeFile);
+        $typeFile = str_replace('{isObjectOfArray}', $isObjectOfArray == 'null' ? '' : '[]', $typeFile);
 
         File::put($structPath, $structFile);
         File::put($typePath, $typeFile);
         $this->info("DataStructure \"$structName\" berhasil dibuat di $structDir");
         $this->info("DataType \"$typeName\" berhasil dibuat di $typeDir");
+
         return Command::SUCCESS;
     }
 }
