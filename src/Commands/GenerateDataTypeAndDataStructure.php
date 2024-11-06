@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Console\Commands\MakeDataType;
+namespace RKWP\Commands;
 
-use FontLib\Table\Type\name;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
