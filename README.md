@@ -1,9 +1,18 @@
-- Kode ini akan membantu kamu untuk mengabaikan case sensitive ketika mencoba akses array.
-- Kode ini otomatis mengconvert array menjadi class (class disini bisa berperilaku seperti array, jadi kamu bisa akses seperti array pada umumnya)
+# Sejarah Singkat ObjectIterable
+ObjectIterable saya buat karena kebutuhan kerja saya, saya tidak ingin ketika saya akses data array berdasarkan key / property harus case sensitive
+
+Fungsi:
+- ObjectIterabe akan membantu kamu untuk mengabaikan case sensitive ketika mencoba akses array.
+- ObjectIterabe otomatis mengconvert array menjadi class (class disini bisa berperilaku seperti array, jadi kamu bisa akses seperti array pada umumnya)
 
   Berikut adalah dokumentasi untuk penggunaan class `ObjectIterable` yang mengonversi array ke objek dan mengabaikan case sensitivity saat mengakses array, serta mendeteksi jika suatu properti adalah array dan mengonversinya secara otomatis ke `RowData`.
 
-### 1. **Pembuatan ObjectIterable**
+## Install
+```
+composer require rkwp/object-iterable-laravel
+```
+
+### **Pembuatan ObjectIterable**
 
 Untuk membuat instance dari `ObjectIterable`, cukup masukkan array yang ingin dikonversi:
 
@@ -17,10 +26,10 @@ $array = [
     ],
 ];
 
-$objectIterable = new objectIterable($array);
+$objectIterable = objectIterable($array);
 ```
 
-### 2. **Akses Properti dengan Case Insensitive**
+### **Akses Properti dengan Case Insensitive**
 
 Setelah array dikonversi, Anda dapat mengakses nilai-nilai di dalamnya secara case-insensitive. Misalnya:
 
@@ -29,7 +38,7 @@ echo $objectIterable->name; // Output: John Doe
 echo $objectIterable->EMAIL; // Output: johndoe@example.com
 ```
 
-### 3. **Akses Properti yang Merupakan Array**
+### **Akses Properti yang Merupakan Array**
 
 Jika properti berisi array, properti tersebut secara otomatis akan dikonversi menjadi objek `RowData`:
 
@@ -38,14 +47,16 @@ echo $objectIterable->address->city; // Output: New York
 echo $objectIterable->ADDRESS->ZIP;  // Output: 10001
 ```
 
-### 4. **Penggunaan dengan `foreach` (Iterator)**
+### **Penggunaan dengan `foreach` (Iterator)**
 
-Anda dapat melakukan iterasi melalui semua item dalam `ObjectIterable` atau `RowData` menggunakan `foreach`:
+Anda dapat melakukan iterasi menggunakan `foreach` jika data array sudah di konversi menjadi objectIterable. Berikut contohnya:
 
 ```php
 foreach ($objectIterable as $item) {
     echo $item->name;
     echo $item->email;
+    echo $item['email'];
+    echo $item['EMAIL'];
 }
 ```
 
@@ -57,15 +68,23 @@ foreach ($objectIterable->address as $key => $value) {
 }
 ```
 
-### 5. **Mengonversi Kembali ke Array**
+### **Mengonversi Kembali ke Semi Array**
 
-Jika Anda ingin mengonversi objek kembali menjadi array, gunakan metode `toArray()`:
+Jika Anda ingin mengonversi objek kembali menjadi semi array, gunakan metode `toArray()`:
 
 ```php
 $array = $objectIterable->toArray();
 ```
 
-### 6. **Mengonversi ke Laravel Collection**
+### **Mengonversi Kembali ke Array**
+
+Jika Anda ingin mengonversi objek kembali menjadi array, gunakan metode `forceArray()`:
+
+```php
+$array = $objectIterable->forceArray();
+```
+
+### **Mengonversi ke Laravel Collection**
 
 Jika Anda menggunakan Laravel dan ingin memanfaatkan Collection, gunakan metode `toCollect()`:
 
@@ -73,7 +92,7 @@ Jika Anda menggunakan Laravel dan ingin memanfaatkan Collection, gunakan metode 
 $collection = $objectIterable->toCollect();
 ```
 
-### 7. **Menggunakan JSON Serialize**
+### **Menggunakan JSON Serialize**
 
 Anda dapat mengubah instance `ObjectIterable` ke JSON menggunakan `json_encode()`:
 
@@ -81,7 +100,7 @@ Anda dapat mengubah instance `ObjectIterable` ke JSON menggunakan `json_encode()
 $json = json_encode($objectIterable); // Menghasilkan JSON dari objek
 ```
 
-### 8. **ArrayAccess (Akses seperti Array)**
+### **ArrayAccess (Akses seperti Array)**
 
 `ObjectIterable` dan `RowData` juga mendukung akses seperti array:
 
@@ -95,13 +114,19 @@ Jika properti merupakan array, maka akan tetap bisa diakses seperti ini:
 echo $objectIterable['ADDRESS']['CITY']; // Output: New York
 ```
 
-### 9. **Penghitungan Jumlah Item**
+### **Penghitungan Jumlah Item**
 
 Anda dapat menggunakan `count()` untuk mengetahui jumlah elemen dalam `ObjectIterable`:
 
 ```php
 echo count($objectIterable); // Output: jumlah elemen dalam array
 ```
+
+### **Case Sensitive**
+Pada awalnya objectIterable ini dibuat untuk mengabaikan case sensitive, namun jika kamu ingin case sensitive, tambahkan parameter kedua menjadi `false`
+```php
+$objectIterable = objectIterable($array, false);
+``` 
 
 ### Contoh Kasus
 
@@ -115,7 +140,7 @@ $data = [
     ]
 ];
 
-$object = new objectIterable($data);
+$object = objectIterable($data);
 
 echo $object->name; // Alice
 echo $object->address->city; // Wonderland
@@ -125,15 +150,10 @@ $arrayBack = $object->toArray();
 
 Ini adalah cara pemakaian dasar dari class `ObjectIterable` yang Anda buat untuk mengonversi array ke objek dan memberikan akses yang lebih fleksibel dengan fitur case-insensitive serta otomatisasi dalam penanganan properti berjenis array.
 
-
 ## Lalu bagaimana untuk definisikan data object?
 Mungkin jika kamu sudah terbiasa menggunakan TypeScript sudah tidak asing lagi dengan autocomplete yang membantu kamu mengetahui sebuah objek itu akan return property apa saja. Di TypeScrpt bisa mengggunakan tipe data custom dan interface.
 
 Nah, dengan object iterable juga, berikut cara cara nya:
-
-```
-composer require rkwp/object-iterable-laravel
-```
 
 Setelah itu, daftarkan artisan command di project laravel kamu. Ada di file: `app/Console/Kernel.php`
 Kemdian tambahkan ini:

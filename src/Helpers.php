@@ -3,8 +3,11 @@
 use RKWP\Utils\ObjectIterable;
 
 if (!function_exists('objectIterable')) {
-    function objectIterable($objOrArray): ObjectIterable | array | null
+    function objectIterable($arr, $caseInsensitive = true): array|null|ObjectIterable
     {
-        return new ObjectIterable($objOrArray);
+        if (is_bool($arr)) {
+            return [];
+        }
+        return new ObjectIterable($arr, $caseInsensitive);
     }
 }
