@@ -6,112 +6,128 @@
  * Created At : 2024-10-15
  */
 
-namespace RKWP\Utils\Helper;
+namespace RKWP\Utils;
 
 use ReflectionProperty;
 
 class ObjectIterable implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSerializable
 {
-    public function __construct($items = [], $forceArray = false)
+    private $items = [];
+    private $options;
+    public function __construct($items = [], $caseInsensitive = true)
     {
+       $this->options['caseInsensitive'] = $caseInsensitive;
         $items = json_decode(json_encode($items), true);
-
         foreach ($items as $key => $value) {
-            $property = strtolower($key);
+            $property = $caseInsensitive ? strtolower($key) : $key;
             if (is_array($value)) {
-                $this->{$property} = new ObjectIterable($value);
+               $this->setItem($property, new ObjectIterable($value, $caseInsensitive));
             } else {
-                $this->{$property} = $value;
+               $this->setItem($property, $value);
             }
         }
     }
 
-    public function assign($items = [], $childClass = null)
+    public function assign($items = [], $childClass = null, $caseInsensitive = true)
     {
         $items = json_decode(json_encode($items), true);
 
+        $this->options['caseInsensitive'] = $caseInsensitive;
         foreach ($items as $key => $value) {
-            $property = strtolower($key);
+            $property = $caseInsensitive ? strtolower($key) : $key;
             if (is_array($value)) {
                 if (property_exists($this, $property)) {
-                    $reflection = new ReflectionProperty($this, $property);
+                    $reflection = new \ReflectionProperty($this, $property);
                     if ($reflection->hasType() && !$reflection->getType()->isBuiltin()) {
                         $className = $reflection->getType()->getName();
-                        $this->{$property} = (new $className())->set($value);
+                        $this->setItem($property, (new $className())->set($value));
                     }
                 } else {
-                    $this->{$property} = (new $childClass)->set($value);
+                       $this->setItem($property, $childClass ? (new $childClass)->set($value) : new ObjectIterable($value, $caseInsensitive));
                 }
             } else {
-                $this->{$property} = $value;
+               $this->setItem($property, $value);
             }
         }
         return $this;
     }
 
+    function setItem($key, $value): void {
+       $this->items[$key] = $value;
+    }
+
+    function getItems() {
+       return $this->items;
+    }
+
     public function __get($name)
     {
-        $name = strtolower($name);
-        return $this->{$name} ?? null;
+        $name = $this->options['caseInsensitive'] ? strtolower($name) : $name;
+        return $this->items[$name] ?? null;
     }
 
     public function __set($name, $value)
     {
-        $name = strtolower($name);
-        $this->{$name} = $value;
+        $name = $this->options['caseInsensitive'] ? strtolower($name) : $name;
+        $this->items[$name] = $value;
     }
 
     public function offsetExists($offset): bool
     {
-        return property_exists($this, strtolower($offset));
+       return array_key_exists($this->options['caseInsensitive'] ? strtolower($offset) : $offset, $this->getItems());
     }
 
     public function offsetGet($offset): mixed
     {
-        $offset = strtolower($offset);
-        return $this->{$offset} ?? null;
+        $offset = $this->options['caseInsensitive'] ? strtolower($offset) : $offset;
+        return $this->items[$offset] ?? null;
     }
 
     public function offsetSet($offset, $value): void
     {
-        $offset = strtolower($offset);
-        $this->{$offset} = $value;
+        $offset = $this->options['caseInsensitive'] ? strtolower($offset) : $offset;
+        $this->items[$offset] = $value;
     }
 
     public function offsetUnset($offset): void
     {
-        $offset = strtolower($offset);
-        unset($this->{$offset});
+        $offset = $this->options['caseInsensitive'] ? strtolower($offset) : $offset;
+        unset($this->items[$offset]);
     }
 
     public function getIterator(): \Traversable
     {
-        return new \ArrayIterator(get_object_vars($this));
+        return new \ArrayIterator($this->getItems());
     }
 
     public function count(): int
     {
-        return count(get_object_vars($this));
+        return count($this->getItems());
     }
 
     public function toArray()
     {
-        return collect(get_object_vars($this))->toArray();
+        return collect($this->getItems())->toArray();
     }
+
+    public function forceArray() {
+       $items = json_decode(json_encode(collect($this->getItems())->toArray()), true);
+       return $items;
+   }
 
     public function toCollect(): \Illuminate\Support\Collection
     {
-        return collect(get_object_vars($this));
+        return collect($this->getItems());
     }
 
     public function jsonSerialize(): mixed
     {
-        return get_object_vars($this);
+        return $this->getItems();
     }
 
     public function sumGroupBy($groupingCriteria, $sumColumn = null, $castTo = 'int', $callback = null): array
     {
-        $grpData = collect(get_object_vars($this))->groupBy($groupingCriteria);
+        $grpData = collect($this->getItems())->groupBy($groupingCriteria);
 
         $res = [];
         foreach ($grpData as $key => $items) {
@@ -137,7 +153,7 @@ class ObjectIterable implements \ArrayAccess, \IteratorAggregate, \Countable, \J
     }
 
     // public function countGroupBy($groupingCriteria) {
-    //     $grpData = collect(get_object_vars($this))->groupBy($groupingCriteria);
+    //     $grpData = collect($this->items)->groupBy($groupingCriteria);
     //     $res = [];
 
     //     foreach ($grpData as $key => $items) {
@@ -148,7 +164,7 @@ class ObjectIterable implements \ArrayAccess, \IteratorAggregate, \Countable, \J
     // }
 
     // public function countNotEmptyGroupBy($groupingCriteria, $countColumn) {
-    //     $grpData = collect(get_object_vars($this))->groupBy($groupingCriteria);
+    //     $grpData = collect($this->items)->groupBy($groupingCriteria);
     //     $res = [];
 
     //     foreach ($grpData as $key => $items) {
