@@ -13,7 +13,9 @@ use ReflectionProperty;
 class ObjectIterable implements \ArrayAccess, \IteratorAggregate, \Countable, \JsonSerializable
 {
     private $items = [];
-    private $options;
+    private $options = [
+        'caseInsensitive' => true
+    ];
     public function __construct($items = [], $caseInsensitive = true)
     {
        $this->options['caseInsensitive'] = $caseInsensitive;
